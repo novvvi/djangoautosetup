@@ -13,18 +13,39 @@ class django():
         self.project = project
         self.app = app
         self.final = self.final(self.project)
-        #.create_app = self.create_app(self.project, self.call, self.app)
-        #self.copyurl = self.copyurl(self.local_dir, self.project, self.app)
-        #self.settings_update = self.settings_update(self.app, self.project)
-        #self.urls_update = self.urls_update(self.app, self.project)
+        self.create_app = self.create_app(self.project, self.call, self.app)
+        self.copyurl = self.copyurl(self.local_dir, self.project, self.app)
+        self.settings_update = self.settings_update(self.app, self.project)
+        self.urls_update = self.urls_update(self.app, self.project)
 
 
 
     def create_app(self, project, python, apps):
+        print ("***************************************")
+        print(os.getcwd())
+        os.chdir(f"{project}/apps")
         for app in apps:
-            text = f'cd {project}/apps & {python} ../manage.py startapp {app} & cd {app}/ & mkdir templates & mkdir static & cd templates/ & mkdir {app}'
-            test = os.system(text)
-            print (test)
+            
+            comm1 = f'{python} ../manage.py startapp {app}'
+            run1 = os.system(comm1)
+            print (f"create {app}",run1)
+
+            os.chdir(f"{app}")
+
+            comm2 = f"mkdir templates & mkdir static"
+            run2 = os.system(comm2)
+            print (f"create template & static",run2)
+
+            os.chdir("templates")
+
+            comm3 = f"mkdir {app}"
+            run3 = os.system(comm3)
+            print (f"create template & static",run3)
+
+            os.chdir("../..")
+            print(os.getcwd())
+        os.chdir("../..")
+        print(os.getcwd())
 
 
     def copyurl(self, direct, project, apps):
@@ -35,20 +56,25 @@ class django():
 
 
     def final(self, project):
+        print ("***************************************")
         comm1 = f'django-admin startproject {project}'
-        comm2 = f'mkdir {project}/apps'
+        comm2 = f'mkdir apps'
         run1 = os.system(comm1)
-        print (run1)
-        print ("wait 3 secs until startproject complated =D")
+        print ("created project",run1)
+        print ("wait 3 secs until startproject complated")
         time.sleep(3)
+        os.chdir(f"{project}")
         run2 = os.system(comm2)
-        print (run2)
+        print ("created apps folder",run2)
+        os.chdir("..")
 
 
     def settings_update(self, apps, project):
+        print ("***************************************")
+        print ("update settings.py")
         setting = "INSTALLED_APPS = ["
         for app in apps:
-            setting += (f"\n        'apps.{app}','")
+            setting += (f"\n    'apps.{app}','")
         s = open(f"{project}/{project}/settings.py").read()
         s = s.replace("INSTALLED_APPS = [", setting)
         f = open(f"{project}/{project}/settings.py", 'w')
@@ -57,6 +83,8 @@ class django():
 
 
     def urls_update(self, apps, project):
+        print ("***************************************")
+        print ("update urls.py")
         url = "    url(r'^admin/', admin.site.urls),"
         for app in apps:
             url += (f"\n    #url(r'^', include('apps.{app}.urls'),")
